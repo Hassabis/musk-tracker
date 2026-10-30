@@ -39,6 +39,7 @@ export function ForecastSummary({forecast,failed=false,compact=false}:{forecast:
 }
 export function MarketPrediction({tracking}:{tracking:Tracking}){const state=useForecast(tracking);return <ForecastSummary {...state} compact/>}
 export function ForecastChance({forecast,label}:{forecast:Forecast|null;label:string}){
-  const {percent}=useI18n(),chance=rangeChance(forecast,label)
-  return <>{chance===null?'—':chance>0&&chance<.01?`<${percent(.01)}`:percent(chance)}</>
+  const {locale}=useI18n(),chance=rangeChance(forecast,label)
+  const percent=(value:number)=>new Intl.NumberFormat(locale,{style:'percent',maximumFractionDigits:0}).format(value)
+  return <>{chance===null?'—':chance>0&&chance<.01?`<${percent(.01)}`:chance>.99&&chance<1?`>${percent(.99)}`:percent(chance)}</>
 }

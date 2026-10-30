@@ -143,6 +143,9 @@ h3 { color: #ddd; }
 .market-placeholder strong { color: #bbb; }
 .market-placeholder p { color: #777; }
 .forecast-summary { background: #090909; border-color: #666; padding: 16px 22px; margin-bottom: 18px; }
+.forecast-summary:not(.forecast-compact) { display: flex; align-items: center; gap: 45px; }
+.forecast-summary:not(.forecast-compact) > .forecast-heading { flex-direction: column; align-items: flex-start; gap: 9px; }
+.forecast-summary:not(.forecast-compact) > .forecast-values { display: flex; gap: 55px; margin-top: 0; }
 .forecast-heading { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .forecast-heading h2 { color: #aaa; font-size: 11px; display: flex; align-items: center; gap: 7px; }
 .forecast-heading h2 svg { display: none; }
@@ -159,6 +162,14 @@ h3 { color: #ddd; }
 .forecast-compact .forecast-values > div > span { font-size: 10px; }
 .forecast-compact .forecast-values strong { font-size: 29px; }
 .forecast-compact .forecast-values b { font-size: 22px; margin-top: 11px; }
+.market-primary-row { display: grid; grid-template-columns: 1fr 1.1fr; gap: 18px; align-items: start; padding-block: 7px 12px; }
+.market-primary-row .market-count { flex-direction: column; align-items: flex-start; gap: 9px; margin: 18px 0 0; }
+.market-primary-row .forecast-compact { border: 0; margin: 17px 0 0; padding: 0; }
+.market-primary-row .forecast-heading { display: none; }
+.market-primary-row .forecast-values { display: block; margin: 0; }
+.market-primary-row .forecast-values > div + div { margin-top: 11px; }
+.market-primary-row .forecast-values strong { margin-top: 5px; }
+.market-primary-row .forecast-values b { font-size: 17px; margin-top: 3px; }
 .tweet { padding: 18px 22px; gap: 11px; border-color: #232323; }
 .tweet:hover { background: #141414; }
 .tweet-avatar { width: 33px; height: 33px; border-radius: 0; background: #111; border: 1px solid #333; color: #ddd; font-size: 18px; }
@@ -406,6 +417,9 @@ dd { color: #ddd; }
   .market-summary strong { white-space: normal; overflow-wrap: anywhere; font-size: 24px; }
   .market-count-primary strong { font-size: 38px; }
   .forecast-summary { padding: 15px 17px; }
+  .forecast-summary:not(.forecast-compact) { display: block; }
+  .forecast-summary:not(.forecast-compact) > .forecast-heading { flex-direction: row; align-items: center; }
+  .forecast-summary:not(.forecast-compact) > .forecast-values { display: grid; gap: 16px; margin-top: 14px; }
   .forecast-compact { padding: 15px 0 0; }
   .forecast-values { gap: 16px; }
   .forecast-values strong { font-size: 34px; }
