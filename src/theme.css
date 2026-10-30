@@ -415,11 +415,13 @@ dd { color: #ddd; }
   .market-summary > div:nth-child(2) { border-bottom: 1px solid #292929; }
   .market-summary > div:nth-child(n+3) { border-bottom: 0; }
   .market-summary strong { white-space: normal; overflow-wrap: anywhere; font-size: 24px; }
+  .market-summary > div:not(.market-count-primary) strong { font-size: clamp(15px,4.5vw,20px); white-space: nowrap; overflow-wrap: normal; }
   .market-count-primary strong { font-size: 38px; }
   .forecast-summary { padding: 15px 17px; }
   .forecast-summary:not(.forecast-compact) { display: block; }
-  .forecast-summary:not(.forecast-compact) > .forecast-heading { flex-direction: row; align-items: center; }
+  .forecast-summary:not(.forecast-compact) > .forecast-heading { flex-direction: row; align-items: center; flex-wrap: wrap; }
   .forecast-summary:not(.forecast-compact) > .forecast-values { display: grid; gap: 16px; margin-top: 14px; }
+  .forecast-summary:not(.forecast-compact) .forecast-values > div > span { min-height: 33px; }
   .forecast-compact { padding: 15px 0 0; }
   .forecast-values { gap: 16px; }
   .forecast-values strong { font-size: 34px; }
