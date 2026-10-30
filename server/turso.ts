@@ -93,6 +93,7 @@ export class TursoStore implements ArchiveStore {
     }
   }
   async count(start:number,end:number){await this.initialize();return Number((await this.sql.query('SELECT COUNT(*) n FROM posts WHERE created_at>=? AND created_at<=? AND present=1',[new Date(start).toISOString(),new Date(end).toISOString()])).rows[0].n)}
+  async timestamps(start:number,end:number){await this.initialize();return (await this.sql.query('SELECT created_at FROM posts WHERE present=1 AND created_at>=? AND created_at<=? ORDER BY created_at',[new Date(start).toISOString(),new Date(end).toISOString()])).rows.map(row=>Date.parse(String(row.created_at)))}
   async coverage():Promise<Coverage[]>{await this.initialize();return (await this.sql.query('SELECT start,end FROM coverage ORDER BY start')).rows.map(row=>({start:Number(row.start),end:Number(row.end)}))}
   async covered(start:number,end:number){return covers(await this.coverage(),start,end)}
   async saveTracking(tracking:Tracking){await this.initialize();await this.sql.query('INSERT INTO trackings VALUES(?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data',[tracking.id,JSON.stringify(tracking)])}

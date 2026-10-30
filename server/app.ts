@@ -6,6 +6,8 @@ import { sortMarkets } from '../src/lib/markets.ts'
 import { QuoteService } from './quotes.ts'
 import { covers, type ArchiveStore } from './archive.ts'
 import { localeResponse } from './locale.ts'
+import { buildForecast } from './forecast.ts'
+import type { Forecast } from '../src/lib/forecast.ts'
 class InputError extends Error {}
 
 function range(url:URL){
@@ -19,6 +21,7 @@ function range(url:URL){
 export function createApp(store:ArchiveStore,{cloud=false}={}){
   const collector=new Collector(store),quotes=new QuoteService()
   let refresh:Promise<void>|undefined
+  const forecasts=new Map<string,Promise<Forecast>>()
   async function sync(){
     refresh??=collector.sync().finally(()=>{refresh=undefined})
     await refresh
@@ -33,6 +36,23 @@ export function createApp(store:ArchiveStore,{cloud=false}={}){
   async function filtered(url:URL){
     const r=range(url),q=(url.searchParams.get('q')||'').toLowerCase(),type=url.searchParams.get('type')||'all'
     return (await store.posts(r.start,r.end,url.searchParams.get('archive')==='true')).filter(p=>(!q||p.text.toLowerCase().includes(q)||p.id.includes(q))&&(type==='all'||p.type===type))
+  }
+  async function forecast(url:URL){
+    const [status,markets,observedThrough,coverage]=await Promise.all([store.status(),store.trackings(),store.get<number|null>('observedThrough',null),store.coverage()])
+    const id=url.searchParams.get('tracking'),tracking=id?markets.find(t=>t.id===id):sortMarkets(markets).find(t=>Date.parse(t.startDate)<=Date.now()&&Date.parse(t.endDate)>Date.now())
+    if(!tracking)throw new InputError('Market period not found')
+    if(status.error||!observedThrough||Date.now()-observedThrough>180_000||Date.now()>=Date.parse(tracking.endDate))return buildForecast({tracking,status,observedThrough,coverage,timestamps:[]})
+    const key=[tracking.id,tracking.official,tracking.checkedAt,status.lastSuccess,observedThrough].join(':')
+    if(!forecasts.has(key)){
+      if(forecasts.size>=12)forecasts.delete(forecasts.keys().next().value!)
+      const pending=(async()=>{
+        const end=observedThrough??Date.now(),start=Math.min(end-180*DAY,Date.parse(tracking.startDate))
+        const timestamps=await store.timestamps(start,end)
+        return buildForecast({tracking,status,observedThrough,coverage,timestamps})
+      })().catch(error=>{forecasts.delete(key);throw error})
+      forecasts.set(key,pending)
+    }
+    return forecasts.get(key)!
   }
   async function dashboard(url:URL):Promise<Dashboard>{
     const r=range(url),now=Date.now()
@@ -80,7 +100,8 @@ export function createApp(store:ArchiveStore,{cloud=false}={}){
       }
       if(req.method!=='GET')return json({error:'Method not allowed'},405)
       if(url.pathname==='/api/health')return json({ok:true,status:await store.status()})
-      if(url.pathname==='/api/dashboard'||url.pathname==='/api/posts'||url.pathname==='/api/export'||url.pathname.startsWith('/api/markets/'))await fresh()
+      if(url.pathname==='/api/dashboard'||url.pathname==='/api/posts'||url.pathname==='/api/export'||url.pathname==='/api/forecast'||url.pathname.startsWith('/api/markets/'))await fresh()
+      if(url.pathname==='/api/forecast')return json(await forecast(url))
       const marketRoute=/^\/api\/markets\/([^/]+)(?:\/(stream|history))?$/.exec(url.pathname)
       if(marketRoute){
         const tracking=(await store.trackings()).find(t=>t.id===marketRoute[1])

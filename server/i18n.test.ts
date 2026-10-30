@@ -19,11 +19,11 @@ test('missing geo headers use supported browser preferences and default to Engli
   assert.equal(isLocale('fr'),false);assert.equal(isLocale('zh'),true)
 })
 test('all UI translation keys exist in every language with identical interpolation parameters',()=>{
-  const files=['src/App.tsx','src/components/MarketLive.tsx','src/components/Charts.tsx','src/components/MarketPicker.tsx','src/components/Select.tsx','src/components/LanguagePicker.tsx','src/components/EasternClock.tsx']
+  const files=['src/App.tsx','src/components/MarketLive.tsx','src/components/Charts.tsx','src/components/MarketPicker.tsx','src/components/Select.tsx','src/components/LanguagePicker.tsx','src/components/EasternClock.tsx','src/components/MarketForecast.tsx']
   const keys=new Set<string>()
   for(const file of files){
     const source=ts.createSourceFile(file,readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX)
-    function visit(node:ts.Node){if(ts.isCallExpression(node)&&ts.isIdentifier(node.expression)&&['tr','t'].includes(node.expression.text)&&node.arguments[0]&&ts.isStringLiteral(node.arguments[0]))keys.add(node.arguments[0].text);ts.forEachChild(node,visit)}
+    function visit(node:ts.Node){if(ts.isCallExpression(node)&&ts.isIdentifier(node.expression)&&['tr','t'].includes(node.expression.text)&&node.arguments[0]&&ts.isStringLiteral(node.arguments[0]))keys.add(node.arguments[0].text);if(file.endsWith('MarketForecast.tsx')&&ts.isStringLiteral(node)&&/[\u4e00-\u9fff]/.test(node.text))keys.add(node.text);ts.forEachChild(node,visit)}
     visit(source)
   }
   const parameters=(value:string)=>[...value.matchAll(/\{(\w+)\}/g)].map(match=>match[1]).sort()

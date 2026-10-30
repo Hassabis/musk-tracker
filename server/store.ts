@@ -46,6 +46,7 @@ export class Store {
   }
   saveTracking(tracking: Tracking) { this.db.prepare('INSERT INTO trackings VALUES (?,?) ON CONFLICT(id) DO UPDATE SET data=excluded.data').run(tracking.id, JSON.stringify(tracking)) }
   count(start:number,end:number){return Number(this.db.prepare('SELECT COUNT(*) n FROM posts WHERE created_at>=? AND created_at<=? AND present=1').get(new Date(start).toISOString(),new Date(end).toISOString())!.n)}
+  timestamps(start:number,end:number){return this.db.prepare('SELECT created_at FROM posts WHERE present=1 AND created_at>=? AND created_at<=? ORDER BY created_at').all(new Date(start).toISOString(),new Date(end).toISOString()).map(row=>Date.parse(String(row.created_at)))}
   coverage(){return this.db.prepare('SELECT start,end FROM coverage ORDER BY start').all().map(row=>({start:Number(row.start),end:Number(row.end)}))}
   startRun(started:string){return this.db.prepare('INSERT INTO sync_runs(started_at,status) VALUES (?,?)').run(started,'running').lastInsertRowid}
   finishRun(id:string|number|bigint,status:string,detail?:string){this.db.prepare('UPDATE sync_runs SET ended_at=?,status=?,detail=? WHERE id=?').run(new Date().toISOString(),status,detail??null,id)}

@@ -7,6 +7,7 @@ export interface ArchiveStore {
   ingest(posts:Post[],start:number,end:number):Result<void>
   posts(start:number,end:number,archived?:boolean):Result<Post[]>
   count(start:number,end:number):Result<number>
+  timestamps(start:number,end:number):Result<number[]>
   covered(start:number,end:number):Result<boolean>
   coverage():Result<Coverage[]>
   saveTracking(tracking:Tracking):Result<void>

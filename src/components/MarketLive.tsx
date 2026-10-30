@@ -3,6 +3,7 @@ import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import type { Tracking } from '../lib/types'
 import type { MarketSnapshot, OutcomeQuote, PriceHistory, PricePoint } from '../lib/quotes'
 import { MarketPicker } from './MarketPicker'
+import { useForecast, ForecastSummary, ForecastChance } from './MarketForecast'
 import { Icon } from './Icon'
 import { SegmentedControl } from './agentui/SegmentedControl'
 import { ReasoningText } from './agentui/ReasoningText'
@@ -45,6 +46,7 @@ export function MarketLive({tracking,markets,onChange,zone}:{tracking:Tracking;m
   const {t:tr,locale,preciseTime:time,cents,percent,amount}=useI18n()
 
   const {snapshot,error,transport,retry}=useQuotes(tracking.id)
+  const prediction=useForecast(tracking)
   const [marketId,setMarketId]=useState(''),[outcomeName,setOutcomeName]=useState('Yes'),[showClosed,setShowClosed]=useState(false)
   const [period,setPeriod]=useState<'1h'|'1d'|'1w'|'max'>('1d')
   const [history,setHistory]=useState<PriceHistory|null>(null),[historyError,setHistoryError]=useState(''),[historyLoading,setHistoryLoading]=useState(false)
@@ -78,11 +80,12 @@ export function MarketLive({tracking,markets,onChange,zone}:{tracking:Tracking;m
   return <div className="market-live">
     <div className="market-toolbar"><MarketPicker markets={markets} value={tracking.id} onChange={onChange} className="market-period"/><div className={`quote-status ${live?'is-live':''}`} role="status"><span className={`status-dot ${live?'good':'muted'}`}/>{state}{snapshot?.receivedAt&&<time>{time(snapshot.receivedAt,zone)} {zone==='UTC'?'UTC':'ET'}</time>}</div>{snapshot?.url&&<a className="text-button market-source" href={snapshot.url} target="_blank" rel="noreferrer">Polymarket <Icon name="external" size={13}/></a>}</div>
     {eventError&&<div className="notice" role="status"><Icon name="info" size={15}/><span>{eventError}</span><button onClick={retry}>{tr("重新连接")} <Icon name="refresh" size={13}/></button></div>}
+    <ForecastSummary {...prediction}/>
     {!snapshot?<section className="panel quote-loading">{error?<button className="button" onClick={retry}>{tr("重试行情连接")}</button>:<ReasoningText phrases={[tr("正在读取市场行情")]} indicator={<Icon name="refresh" className="spin" size={16}/>}/>}</section>:<>
       <section className="market-summary panel" aria-label={tr("市场概况")}><div className="market-count-primary"><span>{tr("周期发帖")}</span><strong>{tracking.official?.toLocaleString(locale)??'—'}<small>{tr("条")}</small></strong></div><div className="market-volume"><span>{tr("24h 成交额")}</span><strong>{amount(snapshot.volume24h)}</strong></div><div><span>{tr("总成交额")}</span><strong>{amount(snapshot.volume)}</strong></div><div><span>{tr("流动性")}</span><strong>{amount(snapshot.liquidity)}</strong></div><div className="market-deadline"><span>{tr("截止时间 · ET")}</span><strong>{time(tracking.endDate,'America/New_York',true)}</strong></div></section>
       <div className="quote-layout">
         <section className="panel quote-panel"><div className="panel-heading"><h2>{tr("数量区间")}</h2>{!!closed.length&&!!active.length&&<button className={`quote-filter ${showClosed?'selected':''}`} aria-pressed={showClosed} onClick={()=>setShowClosed(v=>!v)}>{tr("已结束")} {closed.length}<Icon name="down" size={12}/></button>}</div>
-          <div className="quote-table-scroll"><table className="quote-table"><thead><tr><th>{tr("推文数")}</th><th title={tr("YES 买一与卖一的中间价；缺少双边报价时留空")}>YES</th><th title={tr("NO 买一与卖一的中间价")}>NO</th><th>{tr("买一 / 卖一")}</th></tr></thead><tbody>{visible.map(m=>{const yes=m.outcomes.find(o=>o.name==='Yes'),no=m.outcomes.find(o=>o.name==='No');return <tr key={m.id} className={`${selected?.id===m.id?'selected':''} ${m.closed?'resolved':''}`} onClick={()=>choose(m.id)}><td><button aria-label={tr("查看 {p0} 条行情", {p0: m.label})} aria-pressed={selected?.id===m.id} onClick={e=>{e.stopPropagation();choose(m.id)}}>{m.label}<Icon name="chevron" size={12}/></button>{m.closed&&<small>{tr("已结束")}</small>}</td><td><span className="probability-bar" style={{width:`${(yes?.price??0)*100}%`}}/><b>{percent(yes?.price)}</b></td><td>{percent(no?.price)}</td><td className="bid-ask-cell">{m.closed?'—':<><span>{cents(yes?.bid)}</span><i>/</i><span>{cents(yes?.ask)}</span></>}</td></tr>})}</tbody></table></div>
+          <div className="quote-table-scroll"><table className="quote-table"><thead><tr><th>{tr("推文数")}</th><th className="forecast-chance" title={tr("基于归档统计的区间概率，不是盘口价格")}>{tr("模型")}</th><th title={tr("YES 买一与卖一的中间价；缺少双边报价时留空")}>YES</th><th title={tr("NO 买一与卖一的中间价")}>NO</th><th>{tr("买一 / 卖一")}</th></tr></thead><tbody>{visible.map(m=>{const yes=m.outcomes.find(o=>o.name==='Yes'),no=m.outcomes.find(o=>o.name==='No');return <tr key={m.id} className={`${selected?.id===m.id?'selected':''} ${m.closed?'resolved':''}`} onClick={()=>choose(m.id)}><td><button aria-label={tr("查看 {p0} 条行情", {p0: m.label})} aria-pressed={selected?.id===m.id} onClick={e=>{e.stopPropagation();choose(m.id)}}>{m.label}<Icon name="chevron" size={12}/></button>{m.closed&&<small>{tr("已结束")}</small>}</td><td className="forecast-chance"><ForecastChance forecast={prediction.forecast} label={m.label}/></td><td><span className="probability-bar" style={{width:`${(yes?.price??0)*100}%`}}/><b>{percent(yes?.price)}</b></td><td>{percent(no?.price)}</td><td className="bid-ask-cell">{m.closed?'—':<><span>{cents(yes?.bid)}</span><i>/</i><span>{cents(yes?.ask)}</span></>}</td></tr>})}</tbody></table></div>
           <div className="quote-table-note">{tr("YES / NO 为盘口中间价 · 每份价格以美分计")}</div>
         </section>
         <div className="market-detail-column">{selected&&quote&&<>

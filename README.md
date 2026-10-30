@@ -40,6 +40,7 @@ npm run dev
 - XTracker 官方 tracking 周期和 Post Counter；本地数量并列核对。
 - Polymarket 实时行情：按市场周期切换 YES/NO 报价、买一卖一、五档盘口、最近成交价，以及 1H/1D/1W/全部历史走势。
 - 官方 CLOB WebSocket 经本地 SSE 推送；心跳、断线重连、旧连接消息隔离和已结束市场状态。详见 [docs/POLYMARKET.md](docs/POLYMARKET.md)。
+- 当前市场最终发帖数的统计预测、80% 预测区间、各数量档模型概率和独立历史回测；数据不完整或官方计数不一致时暂停预测。详见 [docs/FORECAST.md](docs/FORECAST.md)。
 - 原始响应、首见/末见时间、内容修订和源端已移除记录的持久归档。
 - 原生 Node SQLite 去重事务、48 小时重叠同步、每天切片的历史补齐；大于等于 100 条的切片继续二分。
 - 每小时全量 posts 与用户 `_count.posts` 核对；只有总量相符才记全量核对通过。全量响应不相符时继续按日期回填。
@@ -66,7 +67,7 @@ npm run build
 
 `server/domain.test.ts` 验证夏令时 23/25 小时、午夜归属、输入验证、幂等导入、被移除记录留档、覆盖区间的毫秒级缺口、跨天断网不误报完整日、重复同步不缩短覆盖区间与 CSV 公式防护（共 7 项测试）。
 
-当前共 23 项测试，新增国家语言优先级、五语词条与参数完整性，以及云端批量导入、失败保留旧覆盖、数据库租约、HTTP SQL 协议、事务错误、导出元信息和采集鉴权检查。
+当前共 28 项测试，覆盖国家语言优先级、五语词条与参数完整性、云端归档、数据库租约、HTTP SQL 协议、导出和采集鉴权，以及预测分布、未来数据隔离、区间概率及质量门槛。
 
 2026-10-29 已完成真实 XTracker / Polymarket API 联调、Chrome 本地页面和 HMR 检查。13 项测试覆盖原有归档逻辑、市场排序、行情资产映射、盘口增量与删除、乱序消息、历史时间单位及 WebSocket 重连。行情实测和截图见 [docs/POLYMARKET.md](docs/POLYMARKET.md)。
 
@@ -76,6 +77,7 @@ npm run build
 - `GET /api/posts?days=30&q=&type=all&page=1&size=20&archive=false`
 - `GET /api/export?format=csv` 或 `format=json`，使用与 posts 一致的筛选参数
 - `GET /api/health`
+- `GET /api/forecast?tracking=:trackingId`
 - `GET /api/locale`
 - `GET /api/cron`（定时采集，必须提供 `Authorization: Bearer CRON_SECRET`）
 - `GET /api/runs`
