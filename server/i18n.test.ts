@@ -19,7 +19,7 @@ test('missing geo headers use supported browser preferences and default to Engli
   assert.equal(isLocale('fr'),false);assert.equal(isLocale('zh'),true)
 })
 test('all UI translation keys exist in every language with identical interpolation parameters',()=>{
-  const files=['src/App.tsx','src/components/MarketLive.tsx','src/components/Charts.tsx','src/components/MarketPicker.tsx','src/components/Select.tsx','src/components/LanguagePicker.tsx']
+  const files=['src/App.tsx','src/components/MarketLive.tsx','src/components/Charts.tsx','src/components/MarketPicker.tsx','src/components/Select.tsx','src/components/LanguagePicker.tsx','src/components/EasternClock.tsx']
   const keys=new Set<string>()
   for(const file of files){
     const source=ts.createSourceFile(file,readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX)

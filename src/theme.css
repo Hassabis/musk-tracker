@@ -57,6 +57,10 @@ h2 { font-size: 15px; font-weight: 650; letter-spacing: -.2px; }
 .breadcrumbs { gap: 12px; font-size: 12px; color: #76867e; }
 .breadcrumbs b { color: #344d42; font-weight: 600; }
 .topbar-right { font-size: 11px; color: #64796d; gap: 16px; }
+.clock-zone { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.clock-zone time { display: inline-flex; gap: 7px; font-variant-numeric: tabular-nums; }
+.clock-value { color: #344d42; font-weight: 600; }
+.clock-abbreviation { display: none; }
 .source-link:hover { color: var(--blue); }
 .content { max-width: 1480px; padding: 26px 28px 0; }
 .content.content-markets { padding-top: 24px; }
@@ -366,8 +370,11 @@ dd { color: #365d36; }
   .brand { font-size: 18px; gap: 9px; }
   .nav-item { padding-inline: 14px; font-size: 13px; }
   .main-shell { margin-left: 0; }
-  .topbar { padding-inline: 16px; height: 58px; }
-  .topbar-right { gap: 10px; }
+  .topbar { padding: 12px 16px; height: auto; min-height: 58px; flex-wrap: wrap; gap: 10px 12px; }
+  .topbar-right { gap: 10px; margin-left: auto; }
+  .clock-zone { gap: 5px; }
+  .clock-label, .clock-date { display: none; }
+  .clock-abbreviation { display: inline; }
   .topbar-right .source-link { display: none; }
   .language-picker { min-width: 92px; }
   .breadcrumbs { gap: 9px; font-size: 11px; }
