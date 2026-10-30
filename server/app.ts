@@ -109,7 +109,9 @@ export function createApp(store:ArchiveStore,{cloud=false}={}){
         const posts=await filtered(url),format=url.searchParams.get('format')||'csv'
         res.setHeader('Content-Disposition',`attachment; filename="musk-posts.${format==='json'?'json':'csv'}"`)
         if(format==='json'){
-          const meta={source:'https://xtracker.polymarket.com/api',filters:Object.fromEntries(url.searchParams),exportedAt:new Date().toISOString(),status:await store.status()}
+          const filterKeys=['format','days','timezone','from','to','q','type','archive']
+          const filters=Object.fromEntries([...url.searchParams].filter(([key])=>filterKeys.includes(key)))
+          const meta={source:'https://xtracker.polymarket.com/api',filters,exportedAt:new Date().toISOString(),status:await store.status()}
           res.writeHead(200,{'Content-Type':'application/json; charset=utf-8'});res.flushHeaders()
           res.write(JSON.stringify(meta).slice(0,-1)+',"posts":[')
           for(let i=0;i<posts.length;i++)if(!await write((i?',':'')+JSON.stringify(posts[i])))return
