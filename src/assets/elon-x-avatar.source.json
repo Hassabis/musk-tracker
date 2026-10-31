@@ -1,7 +1,7 @@
 {
   "account": "https://x.com/elonmusk",
-  "profileSource": "https://xtracker.polymarket.com/api/users/elonmusk?platform=X",
-  "imageSource": "https://pbs.twimg.com/profile_images/1983681414370619392/oTT3nm5Z_normal.jpg",
-  "downloadedImage": "https://pbs.twimg.com/profile_images/1983681414370619392/oTT3nm5Z_400x400.jpg",
-  "retrievedAt": "2026-10-31T05:45:27.849223+00:00"
+  "profileSource": "https://x.com/elonmusk",
+  "verification": "Profile photo link and og:image on the X account page both identify this image.",
+  "imageSource": "https://pbs.twimg.com/profile_images/2103567689515954176/aR-Kjpp4_400x400.jpg",
+  "retrievedAt": "2026-10-31T05:51:54.513577+00:00"
 }
