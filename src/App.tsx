@@ -81,7 +81,7 @@ function App(){
   return <div className="app-shell">
     {mobile&&<button className="nav-backdrop" aria-label={tr("关闭导航")} onClick={()=>setMobile(false)}/>}
     <aside className={`sidebar ${mobile?'open':''}`}>
-      <a className="brand" href="#" onClick={e=>{e.preventDefault();navigate('dashboard')}}><img className="brand-mark" src="/favicon.svg?v=thin-x" alt="" width={33} height={33}/><span>Musk<span className="brand-light">Tracker</span></span></a>
+      <a className="brand" href="#" onClick={e=>{e.preventDefault();navigate('dashboard')}}><img className="brand-mark" src="/favicon.svg?v=thin-x-clear" alt="" width={33} height={33}/><span>Musk<span className="brand-light">Tracker</span></span></a>
       <div className="workspace"><ElonAvatar className="workspace-icon"/><div><strong>Elon Musk</strong><span>@elonmusk</span></div><span className="tracking-dot" title={tr("追踪账号")}/></div>
       <nav aria-label={tr("主导航")}>{tabs.map(t=><button key={t.id} className={`nav-item ${tab===t.id?'active':''}`} aria-current={tab===t.id?'page':undefined} onClick={()=>navigate(t.id)}><Icon name={t.icon}/><span>{tr(t.name)}</span>{t.id==='posts'&&!!status?.archived&&<small>{n(status.archived)}</small>}</button>)}</nav>
       <div className="sidebar-bottom"><a className="external-nav" href="https://xtracker.polymarket.com" target="_blank" rel="noreferrer"><span>XTracker</span><Icon name="external" size={14}/></a><a className="external-nav" href="https://polymarket.com" target="_blank" rel="noreferrer"><span>Polymarket</span><Icon name="external" size={14}/></a><div className="sidebar-status"><span className={`status-dot ${connected?'good':'muted'}`}/><span>{statusText}</span><Icon name="activity" size={15}/></div></div>
