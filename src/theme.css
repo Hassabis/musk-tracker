@@ -452,7 +452,7 @@ dd { color: var(--ink); }
   .forecast-values strong { font-size: 34px; }
   .forecast-values b { font-size: 25px; }
   .quote-layout { gap: 16px; }
-  .market-detail-column { display: flex; gap: 16px; }
+  .market-detail-column { display: flex; align-items: stretch; gap: 16px; }
   .quote-table { min-width: 450px; }
   .quote-table-scroll { max-height: 355px; }
   .quote-table th, .quote-table td { padding-inline: 9px; }
