@@ -37,8 +37,7 @@ h3 { color: var(--ink); }
 .sidebar { width: 212px; padding: 27px 16px 0; background: var(--surface); color: var(--ink); border-right: 1px solid var(--line); }
 .brand { padding: 0 3px; gap: 7px; font-size: 17px; letter-spacing: -.5px; text-transform: none; font-weight: 700; }
 .brand-light { color: var(--text); font-weight: 450; }
-.brand-mark { background: var(--ink); color: var(--surface); width: 31px; height: 33px; border-radius: 8px; box-shadow: none; }
-.brand-mark svg { stroke: var(--surface); }
+.brand-mark { display: block; width: 33px; height: 33px; padding: 0; flex-shrink: 0; border-radius: 8px; box-shadow: none; }
 .workspace { margin: 29px 4px 23px; padding: 17px 0 22px; border-bottom: 1px solid var(--line); }
 .workspace-icon { background: var(--surface); border: 1px solid var(--line); color: var(--ink); border-radius: 50%; }
 .elon-avatar { display: block; object-fit: cover; flex-shrink: 0; }
